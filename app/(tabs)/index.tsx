@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useLocalSearchParams } from 'expo-router';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Modal, PanResponder, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Geojson, Marker, Polyline } from 'react-native-maps';
 import { NODOS_REMMI, getCurrentUserId, getUserData, procesarPagoViaje } from '../../data';
@@ -49,7 +49,7 @@ const EstacionMarker = memo(({ nodo, onSelect, modoActivo }: { nodo: any, onSele
         {modoActivo ? (
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>H</Text>
         ) : (
-          <Ionicons name="bicycle" size={14} color="white" />
+          <Ionicons name="bicycle" size={20} color="white" />
         )}
       </View>
     </Marker>
@@ -101,17 +101,19 @@ export default function MapScreen() {
   const [saldoUsuario, setSaldoUsuario] = useState(0);
   const [procesandoPago, setProcesandoPago] = useState(false);
 
-  useEffect(() => {
-    // Cargar saldo al iniciar la pantalla
-    const cargarDatos = async () => {
-      const id = getCurrentUserId();
-      if (id) {
-        const data = await getUserData(id);
-        if (data) setSaldoUsuario(data.balance);
-      }
-    };
-    cargarDatos();
-  }, [modalResumen]); // Recargar al cerrar o abrir el modal de resumen para ver los cambios
+  useFocusEffect(
+    useCallback(() => {
+      // Cargar saldo al enfocar la pantalla o cambiar modalResumen
+      const cargarDatos = async () => {
+        const id = getCurrentUserId();
+        if (id) {
+          const data = await getUserData(id);
+          if (data) setSaldoUsuario(data.balance);
+        }
+      };
+      cargarDatos();
+    }, [modalResumen])
+  );
 
 
   // --- ESTADO POSICIÓN DEL USUARIO ---
@@ -139,19 +141,19 @@ export default function MapScreen() {
     if (viajeActivo) {
       let stepActual = 0;
       const totalSteps = rutaReal.length;
-
+      
       timer = setInterval(() => {
         setTiempoViaje(t => t + 1);
         setDistanciaViaje(d => d + 0.004); // Simulamos avanzar ~15km/h (0.004 km por segundo)
-
+        
         // Actualizando la ubicación del usuario y moviendo en tiempo real
         if (totalSteps > 0 && stepActual < totalSteps) {
           const currentPosition = rutaReal[stepActual];
           setUbicacionUsuario(currentPosition);
-          mapRef.current?.animateCamera({
-            center: currentPosition,
-            zoom: 19,
-            pitch: 50
+          mapRef.current?.animateCamera({ 
+            center: currentPosition, 
+            zoom: 19, 
+            pitch: 50 
           });
           stepActual += 1;
         }
@@ -227,7 +229,7 @@ export default function MapScreen() {
   // --- LÓGICA DE CÁMARA ---
   const abrirCamara = async () => {
     if (!aceptoTerminos) return;
-
+    
     // Verificar saldo
     if (saldoUsuario < 15) {
       Alert.alert("Saldo Insuficiente", "No tienes fondos suficientes ($15.00 MXN) para iniciar un viaje. Por favor, recarga tu billetera.");
@@ -279,7 +281,7 @@ export default function MapScreen() {
       }
       setProcesandoPago(false);
     }
-
+    
     setViajeActivo(false);
     setModalResumen(true);
   };
@@ -300,12 +302,12 @@ export default function MapScreen() {
         style={styles.map}
         initialRegion={{ ...PUNTO_INICIO_ZOCALO, latitudeDelta: 0.005, longitudeDelta: 0.005 }}
         customMapStyle={viajeActivo ? darkMapStyle : []}
-        showsUserLocation={false}
+        showsUserLocation={false} 
       >
         {/* Marcador del Usuario para ver dónde estamos y simular recorrido */}
         <Marker coordinate={ubicacionUsuario} anchor={{ x: 0.5, y: 0.5 }}>
           <View style={styles.userDotOutline}>
-            <View style={styles.userDotInner} />
+             <View style={styles.userDotInner} />
           </View>
         </Marker>
 
@@ -321,10 +323,10 @@ export default function MapScreen() {
         ))}
 
         {rutaReal.length > 0 && (
-          <Polyline
-            coordinates={rutaReal}
-            strokeColor={viajeActivo ? "#2ecc71" : "#3498db"}
-            strokeWidth={viajeActivo ? 6 : 4}
+          <Polyline 
+            coordinates={rutaReal} 
+            strokeColor={viajeActivo ? "#2ecc71" : "#3498db"} 
+            strokeWidth={viajeActivo ? 6 : 4} 
           />
         )}
       </MapView>
@@ -353,17 +355,17 @@ export default function MapScreen() {
                 {/* Etiqueta de Precio */}
                 <View style={styles.priceBadge}><Text style={styles.priceText}>Base $15 MXN</Text></View>
               </View>
-
+              
               <View style={styles.saldoRow}>
                 <Text style={styles.saldoLabel}>Tu Saldo actual:</Text>
-                <Text style={[styles.saldoValue, saldoUsuario < 15 && { color: '#e74c3c' }]}>${saldoUsuario.toFixed(2)} MXN</Text>
+                <Text style={[styles.saldoValue, saldoUsuario < 15 && {color: '#e74c3c'}]}>${saldoUsuario.toFixed(2)} MXN</Text>
               </View>
 
               <View style={styles.locationRow}>
                 <Ionicons name="location-outline" size={16} color="#666" />
                 <Text style={styles.locationText}>{nodoSeleccionado.nombre}</Text>
               </View>
-
+              
               <View style={styles.infoBanner}>
                 <Ionicons name="information-circle" size={22} color="#0284c7" />
                 <Text style={styles.infoText}>Este trayecto monitorea tu ubicación en tiempo real hacia tu destino final.</Text>
@@ -405,8 +407,8 @@ export default function MapScreen() {
 
           {/* Panel Inferior Fijo de Viaje */}
           <View style={[styles.activeBottomPanel, !panelExpandido && { paddingBottom: 15, paddingTop: 15 }]}>
-            <TouchableOpacity
-              style={styles.togglePanelBtn}
+            <TouchableOpacity 
+              style={styles.togglePanelBtn} 
               onPress={() => setPanelExpandido(!panelExpandido)}
             >
               <View style={styles.handleBar} />
@@ -488,11 +490,11 @@ export default function MapScreen() {
               <Text style={styles.tutorialTitle}>Bienvenido a REMMI</Text>
               <Text style={styles.tutorialSubtitle}>Tu movilidad en Puebla</Text>
             </View>
-
+            
             <View style={styles.tutorialStepsContainer}>
               <View style={styles.tutorialStep}>
                 <View style={styles.stepNumberBadge}><Text style={styles.stepNumber}>1</Text></View>
-                <Text style={styles.tutorialStepText}>Explora el mapa del <Text style={{ fontWeight: 'bold', color: '#2ecc71' }}>Centro Histórico de Puebla</Text> y encuentra una estación o vehículo.</Text>
+                <Text style={styles.tutorialStepText}>Explora el mapa del <Text style={{fontWeight: 'bold', color: '#2ecc71'}}>Centro Histórico de Puebla</Text> y encuentra una estación o vehículo.</Text>
               </View>
               <View style={styles.tutorialStep}>
                 <View style={styles.stepNumberBadge}><Text style={styles.stepNumber}>2</Text></View>
@@ -503,10 +505,10 @@ export default function MapScreen() {
                 <Text style={styles.tutorialStepText}>Bloquea el vehículo en un Punto H para finalizar y procesar tu cobro.</Text>
               </View>
             </View>
-
+            
             <TouchableOpacity style={styles.tutorialBtn} onPress={() => setMostrarTutorial(false)}>
               <Text style={styles.tutorialBtnText}>Comenzar a explorar</Text>
-              <Ionicons name="arrow-forward" size={20} color="white" style={{ marginLeft: 8 }} />
+              <Ionicons name="arrow-forward" size={20} color="white" style={{marginLeft: 8}} />
             </TouchableOpacity>
           </View>
         </View>
@@ -521,7 +523,7 @@ export default function MapScreen() {
               <Text style={styles.resumenTitle}>¡Viaje Completado!</Text>
               <Text style={styles.resumenSubtitle}>Gracias por moverte de forma sostenible</Text>
             </View>
-
+            
             <View style={styles.resumenBody}>
               <View style={styles.resumenRow}>
                 <Text style={styles.resumenLabel}>Tiempo total</Text>
@@ -535,14 +537,14 @@ export default function MapScreen() {
                 <Text style={styles.resumenLabel}>CO2 Evitado</Text>
                 <Text style={styles.resumenValue}>{co2Evitado} kg</Text>
               </View>
-
+              
               <View style={styles.resumenDivider} />
-
+              
               <View style={styles.resumenRow}>
                 <Text style={styles.resumenLabel}>Total a pagar</Text>
                 <Text style={styles.resumenPrice}>${costoTotal} MXN</Text>
               </View>
-
+              
               <View style={styles.resumenPoints}>
                 <Ionicons name="star" size={20} color="#f39c12" />
                 <Text style={styles.resumenPointsText}>+ {puntosGanados} Puntos REMMI obtenidos</Text>
@@ -588,7 +590,7 @@ export default function MapScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
-
+  
   // Ubicación Usuario
   userDotOutline: {
     width: 24,
@@ -645,7 +647,7 @@ const styles = StyleSheet.create({
   saldoValue: { color: '#111', fontSize: 14, fontWeight: '800' },
   locationRow: { flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 15 },
   locationText: { color: '#6B7280', fontSize: 14, marginLeft: 5 },
-
+  
   infoBanner: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#e0f2fe', padding: 12, borderRadius: 12, marginBottom: 15, width: '100%' },
   infoText: { fontSize: 12, color: '#0369a1', marginLeft: 8, flex: 1, lineHeight: 18, fontWeight: '500' },
 
