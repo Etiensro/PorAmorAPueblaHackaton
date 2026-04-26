@@ -1,8 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import MapView, { Callout, Marker } from 'react-native-maps';
+import MapView, { Callout, Geojson, Marker } from 'react-native-maps';
 import { NODOS_REMMI } from '../../data';
-
+const cicloviasData = require('../../assets/Red_Ciclista.json');
+const cicloviasLimpias = {
+  ...cicloviasData,
+  features: cicloviasData.features.filter(
+    (feature: any) =>
+      feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString'
+  )
+};
 export default function MapScreen() {
   const regionInicial = {
     latitude: 19.0022,
@@ -13,11 +20,16 @@ export default function MapScreen() {
 
   return (
     <View style={styles.container}>
-      <MapView 
-        style={styles.map} 
+      <MapView
+        style={styles.map}
         initialRegion={regionInicial}
         showsUserLocation={true}
       >
+        <Geojson
+          geojson={cicloviasLimpias}
+          strokeColor="#3182CE"
+          strokeWidth={3}
+        />
         {NODOS_REMMI.map((nodo) => (
           <Marker
             key={nodo.id}
