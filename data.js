@@ -1065,6 +1065,7 @@ export const LUGARES_RECOMENDADOS_CENTRO = [
     icono: "business" // Icono ilustrativo
   }
 ];
+
 // El nuevo objeto exclusivo para tu pestaña de recompensas
 export const PERFIL_ECOLOGICO = {
   nombre: "Estudiante", // Se mostrará en tu encabezado
