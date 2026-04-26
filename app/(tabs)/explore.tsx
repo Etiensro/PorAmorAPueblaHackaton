@@ -1,112 +1,83 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router'; // <-- Esto nos permite saltar entre pantallas
+import { Ionicons } from '@expo/vector-icons'; // <-- Iconos ilustrativos
+import { LUGARES_RECOMENDADOS_CENTRO } from '../../data';
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+export default function ExploreScreen() {
+  const router = useRouter(); // Inicializamos el router
 
-export default function TabTwoScreen() {
+  // Función que se ejecuta al darle clic a una tarjeta
+  const irAlMapaYRutear = (lugar: any) => {
+    // Saltamos a la pestaña del mapa (index) y le mandamos las coordenadas por "parámetros"
+    router.navigate({
+      pathname: "/",
+      params: { 
+        destLat: lugar.latitud, 
+        destLng: lugar.longitud, 
+        nombreDestino: lugar.nombre 
+      }
+    });
+  };
+
+  // Cambiamos <View> por <TouchableOpacity> para que detecte el clic
+  const renderizarLugar = ({ item }: { item: any }) => (
+    <TouchableOpacity 
+      style={styles.tarjeta} 
+      activeOpacity={0.7} 
+      onPress={() => irAlMapaYRutear(item)}
+    >
+      <View style={styles.encabezadoTarjeta}>
+        {/* Aquí agregamos el icono ilustrativo */}
+        <Ionicons name={item.icono} size={24} color="#la73e8" style={styles.icono} />
+        <Text style={styles.titulo}>{item.nombre}</Text>
+      </View>
+      
+      <Text style={styles.descripcion}>{item.descripcion}</Text>
+      
+      <View style={styles.filaInfo}>
+        <Text style={styles.distancia}>📍 {item.distancia} desde el Zócalo</Text>
+      </View>
+      
+      <View style={styles.etiquetaBeneficio}>
+        <Text style={styles.textoBeneficio}>🎁 {item.beneficio}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.contenedorPrincipal}>
+      <View style={styles.cabecera}>
+        <Text style={styles.tituloPrincipal}>Centro Histórico</Text>
+        <Text style={styles.subtitulo}>Toca un lugar para trazar tu ruta segura en bici 🚲</Text>
+      </View>
+
+      <FlatList
+        data={LUGARES_RECOMENDADOS_CENTRO}
+        keyExtractor={(item) => item.id}
+        renderItem={renderizarLugar}
+        contentContainerStyle={styles.listaPadding}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  contenedorPrincipal: { flex: 1, backgroundColor: '#F5F7FA' },
+  cabecera: { padding: 20, backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  tituloPrincipal: { fontSize: 24, fontWeight: 'bold', color: '#1A202C' },
+  subtitulo: { fontSize: 14, color: '#718096', marginTop: 5 },
+  listaPadding: { padding: 15 },
+  tarjeta: {
+    backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 15,
+    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3, 
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
+  encabezadoTarjeta: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  icono: { marginRight: 10 },
+  titulo: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', flex: 1 },
+  descripcion: { fontSize: 14, color: '#4A5568', lineHeight: 20, marginBottom: 12 },
+  filaInfo: { flexDirection: 'row', marginBottom: 10 },
+  distancia: { fontSize: 13, color: '#3182CE', fontWeight: '600' },
+  etiquetaBeneficio: { backgroundColor: '#E6FFFA', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, alignSelf: 'flex-start' },
+  textoBeneficio: { color: '#2C7A7B', fontSize: 12, fontWeight: 'bold' }
 });
