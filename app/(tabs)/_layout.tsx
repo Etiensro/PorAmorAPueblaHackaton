@@ -20,7 +20,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Mapa REMMI',
+          title: 'Mapa',
           tabBarIcon: ({ color }) => <Ionicons name="map" size={28} color={color} />,
         }}
       />
@@ -29,6 +29,13 @@ export default function TabLayout() {
         options={{
           title: 'Lugares',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="wallet" 
+        options={{
+          title: 'Billetera',
+          tabBarIcon: ({ color }) => <Ionicons name="card-outline" size={28} color={color} />
         }}
       />
     </Tabs>
