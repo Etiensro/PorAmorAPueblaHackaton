@@ -27,8 +27,41 @@ export const NODOS_REMMI = [
 ];
 
 export const USUARIO_ACTUAL = {
-  nombre: "Estudiante BUAP",
+  nombre: "Usuario",
   ecoTokens: 250,
   co2AhorradoKg: 12.5,
   viajesRealizados: 8
 };
+
+// Agrega esto al final de tu archivo data.js
+
+export const CATALOGO_RECOMPENSAS = [
+  { 
+      id: 'RWD-001', 
+      tipo: 'Museo', 
+      titulo: 'Entrada Gratis: Museo Amparo', 
+      descripcion: 'Válido para una entrada general cualquier día de la semana.',
+      costoPuntos: 5 
+  },
+  { 
+      id: 'RWD-002', 
+      tipo: 'Museo', 
+      titulo: 'Entrada Gratis: Fuerte de Loreto', 
+      descripcion: 'Conoce la historia de Puebla con esta entrada general.',
+      costoPuntos: 3 
+  },
+  { 
+      id: 'RWD-003', 
+      tipo: 'Descuento', 
+      titulo: '15% Off: Estación CU', 
+      descripcion: 'Descuento válido para tu próxima renta iniciando en Ciudad Universitaria.',
+      costoPuntos: 2 
+  },
+  { 
+      id: 'RWD-004', 
+      tipo: 'Descuento', 
+      titulo: 'Viaje de 30 min gratis', 
+      descripcion: 'Aplica en cualquier estación de la red (Paseo Bravo, Zócalo, etc).',
+      costoPuntos: 4 
+  }
+];
