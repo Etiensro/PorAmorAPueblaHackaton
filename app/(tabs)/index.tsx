@@ -38,18 +38,31 @@ const EstacionMarker = memo(({ nodo, onSelect, modoActivo }: { nodo: any, onSele
     return () => clearTimeout(timer);
   }, []);
 
+  const getMarkerConfig = (tipo: string) => {
+    switch (tipo) {
+      case 'Educativo': return { bg: '#3b82f6', icon: 'school' };
+      case 'Comercial': return { bg: '#f59e0b', icon: 'cart' };
+      case 'Parque': return { bg: '#10b981', icon: 'leaf' };
+      case 'Transporte Masivo': return { bg: '#8b5cf6', icon: 'bus' };
+      case 'Museo': return { bg: '#E67E22', icon: 'library' };
+      default: return { bg: '#34a853', icon: 'bicycle' };
+    }
+  };
+
+  const config = getMarkerConfig(nodo.tipo);
+
   return (
     <Marker
       coordinate={{ latitude: nodo.latitud, longitude: nodo.longitud }}
-      onPress={() => !modoActivo && onSelect({ ...nodo, tipo: 'Bicicleta Tradicional' })}
+      onPress={() => !modoActivo && onSelect({ ...nodo, tipo: nodo.tipo && !nodo.tipo.includes('Estación') ? nodo.tipo : 'Bicicleta Tradicional' })}
       tracksViewChanges={trackChanges}
     >
       {/* Se aplica opacidad del 40% si es modo de viaje activo para hacerlo casi transparente */}
-      <View style={[styles.markerContainer, { backgroundColor: modoActivo ? '#9b59b6' : '#34a853', opacity: modoActivo ? 0.4 : 1 }]}>
+      <View style={[styles.markerContainer, { backgroundColor: modoActivo ? '#9b59b6' : config.bg, opacity: modoActivo ? 0.4 : 1 }]}>
         {modoActivo ? (
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>H</Text>
         ) : (
-          <Ionicons name="bicycle" size={20} color="white" />
+          <Ionicons name={config.icon as any} size={14} color="white" />
         )}
       </View>
     </Marker>
@@ -375,6 +388,41 @@ export default function MapScreen() {
         </View>
       )}
 
+      {/* SIMBOLOGÍA */}
+      {!viajeActivo && !mostrandoCamara && !nodoSeleccionado && (
+        <View style={styles.legendContainer}>
+          <Text style={styles.legendTitle}>Simbología</Text>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#34a853' }]}><Ionicons name="bicycle" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Estación REMMI</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#10b981' }]}><Ionicons name="leaf" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Parque</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#3b82f6' }]}><Ionicons name="school" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Educativo</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#f59e0b' }]}><Ionicons name="cart" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Comercial</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#8b5cf6' }]}><Ionicons name="bus" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Transporte</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendColorBox, { backgroundColor: '#E67E22' }]}><Ionicons name="library" size={12} color="white" /></View>
+            <Text style={styles.legendText}>Museo</Text>
+          </View>
+          <View style={styles.legendItem}>
+            <View style={[styles.legendLine, { backgroundColor: '#3182CE' }]} />
+            <Text style={styles.legendText}>Ciclovía</Text>
+          </View>
+        </View>
+      )}
+
       {/* VENTANA FLOTANTE: RENTA DE BICI */}
       {nodoSeleccionado && !mostrandoCamara && !viajeActivo && (
         <Modal animationType="fade" transparent={true} visible={!!nodoSeleccionado}>
@@ -664,6 +712,13 @@ const styles = StyleSheet.create({
   },
   layerSelector: { position: 'absolute', top: 50, right: 20, backgroundColor: 'white', borderRadius: 10, padding: 10, elevation: 5 },
   layerBtn: { marginVertical: 5 },
+
+  legendContainer: { position: 'absolute', bottom: 30, right: 20, backgroundColor: 'white', borderRadius: 12, padding: 12, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 3.84 },
+  legendTitle: { fontWeight: '800', fontSize: 13, marginBottom: 8, color: '#111', textTransform: 'uppercase', letterSpacing: 0.5 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  legendColorBox: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center', marginRight: 8 },
+  legendLine: { width: 20, height: 4, borderRadius: 2, marginRight: 8 },
+  legendText: { fontSize: 12, color: '#4b5563', fontWeight: '500' },
 
   modalOverlay: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.3)' },
   bottomSheet: { backgroundColor: 'white', borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 24, paddingTop: 15, paddingBottom: 35, alignItems: 'center', elevation: 20 },
