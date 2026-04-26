@@ -26,8 +26,6 @@ export const NODOS_REMMI = [
   }
 ];
 
-
-
 // WALLET----------------------------------------SIMULACIÓN DE DATOS DE USUARIO PARA LA BILLETERA 
 export const USUARIO_ACTUAL = {
   nombre: "Usuario",
@@ -37,12 +35,14 @@ export const USUARIO_ACTUAL = {
 };
 
 // Almacenamiento local en memoria para simular la base de datos de la Billetera.
+// Modificado para soportar el inicio de sesión
 let inMemoryDB = {
   users: {
     'user_123': {
       id: 'user_123',
       nombre: USUARIO_ACTUAL.nombre, 
       email: 'estudiante@buap.mx',
+      password: 'password123', // Contraseña inicial para poder inciar sesión (email: estudiante@buap.mx)
       balance: 150.50, // Saldo inicial predeterminado
       cards: [
         { id: 'c_abc', cardNumber: '1234567890123456', expiryDate: '12/28', last4: '3456' }
@@ -52,13 +52,63 @@ let inMemoryDB = {
 };
 
 // Simulamos que el usuario "user_123" es el que está usando la app actual.
-const currentUserId = 'user_123';
+let currentUserId = 'user_123';
 
 /**
  * Obtiene el ID del usuario actualmente autenticado.
  */
 export const getCurrentUserId = () => {
   return currentUserId;
+};
+
+/**
+ * Establece el usuario autenticado actual.
+ */
+export const setCurrentUserId = (id) => {
+  currentUserId = id;
+};
+
+/**
+ * Inicia sesión con email y contraseña.
+ */
+export const loginUser = async (email, password) => {
+  await new Promise(resolve => setTimeout(resolve, 800)); // Simula red
+  
+  const users = Object.values(inMemoryDB.users);
+  const user = users.find(u => u.email.toLowerCase() === email.toLowerCase() && u.password === password);
+  
+  if (!user) {
+    throw new Error("Correo o contraseña incorrectos.");
+  }
+  
+  setCurrentUserId(user.id);
+  return user;
+};
+
+/**
+ * Registra un nuevo usuario.
+ */
+export const registerUser = async (nombre, email, password) => {
+  await new Promise(resolve => setTimeout(resolve, 800)); // Simula red
+  
+  const users = Object.values(inMemoryDB.users);
+  if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+    throw new Error("El correo ya está registrado.");
+  }
+  
+  const newId = 'user_' + Math.random().toString(36).substring(2, 11);
+  const newUser = {
+    id: newId,
+    nombre: nombre,
+    email: email,
+    password: password,
+    balance: 0,
+    cards: []
+  };
+  
+  inMemoryDB.users[newId] = newUser;
+  setCurrentUserId(newId);
+  return newUser;
 };
 
 /**
@@ -185,9 +235,6 @@ export const LUGARES_RECOMENDADOS_CENTRO = [
     icono: "business" // Icono ilustrativo
   }
 ];
-
-
-// Agrega esto al final de tu archivo data.js
 
 export const CATALOGO_RECOMPENSAS = [
   { 
