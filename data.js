@@ -235,7 +235,7 @@ export const LUGARES_RECOMENDADOS_CENTRO = [
     icono: "business" // Icono ilustrativo
   }
 ];
-
+//catalogo de recompensas
 export const CATALOGO_RECOMPENSAS = [
   { 
       id: 'RWD-001', 
@@ -253,16 +253,16 @@ export const CATALOGO_RECOMPENSAS = [
   },
   { 
       id: 'RWD-003', 
-      tipo: 'Descuento', 
-      titulo: '15% Off: Estación CU', 
-      descripcion: 'Descuento válido para tu próxima renta iniciando en Ciudad Universitaria.',
+      tipo: 'Museo', 
+      titulo: 'Entrada Gratis: Museo de la Evolución', 
+      descripcion: 'válido para tu próxima visitas.',
       costoPuntos: 2 
   },
   { 
       id: 'RWD-004', 
-      tipo: 'Descuento', 
-      titulo: 'Viaje de 30 min gratis', 
-      descripcion: 'Aplica en cualquier estación de la red (Paseo Bravo, Zócalo, etc).',
-      costoPuntos: 4 
+      tipo: 'Museo', 
+      titulo: 'Entrada Gratis: Museo amparo', 
+      descripcion: 'válido para tu próxima visitas.',
+      costoPuntos: 4  
   }
 ];
