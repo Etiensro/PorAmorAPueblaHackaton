@@ -21,14 +21,24 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Mapa',
+          title: 'Mapa',
           tabBarIcon: ({ color }) => <Ionicons name="map" size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
+          title: 'Lugares',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="wallet" 
+        options={{
+          title: 'Billetera',
+          tabBarIcon: ({ color }) => <Ionicons name="card-outline" size={28} color={color} />
+        }}
+      />
         }}
       />
       <Tabs.Screen
