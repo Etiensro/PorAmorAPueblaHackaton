@@ -1,28 +1,28 @@
 import { ArrowRight, Bike, Lock, Mail, User } from 'lucide-react-native';
 import React, { useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Animated,
-    Dimensions,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { loginUser, registerUser } from '..//../data'; // <-- Revisa que la ruta al data.js sea correcta
+import { loginUser, registerUser } from '../../data'; // Asegúrate de que esta ruta sea correcta
+import INEVerification from './INE/INEVerification';
 
 const { width } = Dimensions.get('window');
 
 export default function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) => void }) {
   const [isRegistering, setIsRegistering] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifyingINE, setIsVerifyingINE] = useState(false);
   const [showAnimation, setShowAnimation] = useState(false);
-  
-  // Ref para la posición de la bicicleta animada
   const bikePosition = useRef(new Animated.Value(-100)).current;
 
   const [name, setName] = useState('');
@@ -38,11 +38,22 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) 
         useNativeDriver: true,
       })
     ]).start(() => {
-      // Cuando la bici termine de cruzar, marcamos el inicio de sesión exitoso
       if (onLoginSuccess) {
         onLoginSuccess(user);
       }
     });
+  };
+
+  const handleVerificationSuccess = async () => {
+    setIsVerifyingINE(false);
+    setIsLoading(true);
+    try {
+      const user = await registerUser(name, email, password);
+      playSuccessAnimation(user);
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'Error de registro.');
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -56,16 +67,14 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) 
       return;
     }
 
+    if (isRegistering) {
+      setIsVerifyingINE(true);
+      return;
+    }
+
     setIsLoading(true);
     try {
-      let user;
-      if (isRegistering) {
-        user = await registerUser(name, email, password);
-      } else {
-        user = await loginUser(email, password);
-      }
-      
-      // Lanzar animación
+      const user = await loginUser(email, password);
       playSuccessAnimation(user);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Error de autenticación.');
@@ -80,7 +89,6 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) 
     setPassword('');
   };
 
-  // Pantalla de animación al iniciar sesión
   if (showAnimation) {
     return (
       <View style={styles.animationContainer}>
@@ -94,7 +102,15 @@ export default function Login({ onLoginSuccess }: { onLoginSuccess: (user: any) 
     );
   }
 
-  // Pantalla del Formulario
+  if (isVerifyingINE) {
+    return (
+      <INEVerification 
+        onVerificationSuccess={handleVerificationSuccess} 
+        onCancel={() => setIsVerifyingINE(false)} 
+      />
+    );
+  }
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -247,7 +263,10 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     shadowColor: '#611232',
-    shadowOffset: { width: 0, height: 10 },
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     shadowOpacity: 0.1,
     shadowRadius: 20,
     elevation: 8,

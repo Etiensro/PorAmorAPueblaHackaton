@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React, { useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
@@ -15,7 +16,11 @@ export default function TabLayout() {
 
   // Muestra la pantalla de Login si no está autenticado
   if (!isAuthenticated) {
-    return <Login onLoginSuccess={(user) => setIsAuthenticated(true)} />;
+    return (
+      <SafeAreaProvider>
+        <Login onLoginSuccess={(user) => setIsAuthenticated(true)} />
+      </SafeAreaProvider>
+    );
   }
 
   return (
@@ -54,9 +59,15 @@ export default function TabLayout() {
           }}
       />
       
-      {/* Ocultamos explicitly el archivo Login.tsx de la barra de tabs */}
+      {/* Ocultamos explícitamente la pantalla de login desde la configuración si existe */}
       <Tabs.Screen
         name="Login"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="INE/INEVerification"
         options={{
           href: null,
         }}

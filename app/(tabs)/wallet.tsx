@@ -1,23 +1,33 @@
 import {
+  ArrowRight,
   Check,
+  CheckCircle,
   CreditCard,
   LogOut,
+  Mountain,
   Plus,
   ShieldCheck,
+  Sun,
   Trash2,
+  Wallet as WalletIcon,
   X
 } from 'lucide-react-native';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
+  Dimensions,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 // Importamos la lógica de datos desde data.js
 import {
@@ -42,6 +52,60 @@ export default function PasareladePagos() {
   const [showRecharge, setShowRecharge] = useState(false);
   const [rechargeAmount, setRechargeAmount] = useState('100');
   const [selectedCardId, setSelectedCardId] = useState('');
+
+  // Animación de Éxito
+  const [showSuccessAnim, setShowSuccessAnim] = useState(false);
+  const successAnimValue = useRef(new Animated.Value(0)).current;
+
+  // Animación de Tutorial
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [tutorialStep, setTutorialStep] = useState(1);
+  const tutorialFadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const checkTutorialStatus = async () => {
+      try {
+        let seen = false;
+        if (Platform.OS === 'web') {
+          seen = localStorage.getItem('@wallet_tutorial_seen_v1') === 'true';
+        }
+        if (!seen) {
+          setShowTutorial(true);
+          Animated.timing(tutorialFadeAnim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }).start();
+        }
+      } catch (e) {
+        // Ignorar
+      }
+    };
+    // Delay slightly to let the UI render first
+    setTimeout(checkTutorialStatus, 500);
+  }, []);
+
+  const nextTutorialStep = () => {
+    if (tutorialStep < 3) {
+      Animated.sequence([
+        Animated.timing(tutorialFadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
+      ]).start(() => {
+        setTutorialStep(tutorialStep + 1);
+        Animated.timing(tutorialFadeAnim, { toValue: 1, duration: 300, useNativeDriver: true }).start();
+      });
+    } else {
+      Animated.timing(tutorialFadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start(() => {
+        setShowTutorial(false);
+        if (Platform.OS === 'web') {
+          try { localStorage.setItem('@wallet_tutorial_seen_v1', 'true'); } catch(e){}
+        }
+      });
+    }
+  };
 
   // Cargar datos del usuario
   const loadUserData = useCallback(async () => {
@@ -94,11 +158,29 @@ export default function PasareladePagos() {
     try {
       const response = await topUpBalance(userId, amount);
       if (response.success) {
-        Alert.alert('Éxito', `¡Recarga exitosa de $${amount} MXN!`);
         setShowRecharge(false);
         setRechargeAmount('100');
         // Actualizar el saldo localmente sin tener que hacer otro fetch
         setUserData((prev: any) => ({ ...prev, balance: response.balance }));
+
+        // Mostrar animación exitosa tipo Cholula
+        setShowSuccessAnim(true);
+        successAnimValue.setValue(0);
+        Animated.sequence([
+          Animated.timing(successAnimValue, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+          }),
+          Animated.delay(2500),
+          Animated.timing(successAnimValue, {
+            toValue: 0,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+        ]).start(() => {
+          setShowSuccessAnim(false);
+        });
       }
     } catch (e: any) {
       Alert.alert('Error', e.message || 'Error al procesar el pago.');
@@ -206,8 +288,111 @@ export default function PasareladePagos() {
     );
   }
 
+  const renderTutorialOverlay = () => {
+    if (!showTutorial) return null;
+
+    let icon;
+    let title = "";
+    let desc = "";
+
+    if (tutorialStep === 1) {
+      icon = <WalletIcon size={64} color="#A3835F" />;
+      title = "Tu Billetera REMMI";
+      desc = "Consulta tu saldo al instante y paga tus pasajes en la ciudad de forma rápida y segura.";
+    } else if (tutorialStep === 2) {
+      icon = <Plus size={64} color="#611232" />;
+      title = "Recarga tu Saldo";
+      desc = "Añade fondos fácilmente con tus tarjetas vinculadas para no quedarte sin viaje.";
+    } else {
+      icon = <ShieldCheck size={64} color="#16a34a" />;
+      title = "Máxima Seguridad";
+      desc = "Tus tarjetas y datos están cifrados de extremo a extremo. ¡Viaja sin preocupaciones!";
+    }
+
+    const slideY = tutorialFadeAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [50, 0]
+    });
+
+    return (
+      <View style={styles.tutorialOverlayContainer}>
+        <Animated.View style={[styles.tutorialBackdrop, { opacity: tutorialFadeAnim }]} />
+        <Animated.View style={[styles.tutorialCard, { opacity: tutorialFadeAnim, transform: [{ translateY: slideY }] }]}>
+          
+          <View style={styles.tutorialIconWrapper}>
+            {icon}
+          </View>
+          
+          <View style={styles.tutorialDotsHolder}>
+             <View style={[styles.tutorialDot, tutorialStep >= 1 && styles.tutorialDotActive]} />
+             <View style={[styles.tutorialDot, tutorialStep >= 2 && styles.tutorialDotActive]} />
+             <View style={[styles.tutorialDot, tutorialStep >= 3 && styles.tutorialDotActive]} />
+          </View>
+
+          <Text style={styles.tutorialTitleText}>{title}</Text>
+          <Text style={styles.tutorialDescText}>{desc}</Text>
+
+          <TouchableOpacity style={styles.tutorialButton} onPress={nextTutorialStep}>
+            <Text style={styles.tutorialButtonText}>
+              {tutorialStep === 3 ? "¡Empezar!" : "Siguiente"}
+            </Text>
+            {tutorialStep < 3 && <ArrowRight size={20} color="#fff" style={{marginLeft: 8}} />}
+          </TouchableOpacity>
+        </Animated.View>
+      </View>
+    );
+  };
+
+  const renderSuccessOverlay = () => {
+    if (!showSuccessAnim) return null;
+
+    const overlayOpacity = successAnimValue;
+    const cardTranslateY = successAnimValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [300, 0]
+    });
+    
+    const sunTranslateY = successAnimValue.interpolate({
+        inputRange: [0, 0.5, 1],
+        outputRange: [80, -10, 0]
+    });
+
+    return (
+      <Animated.View style={[styles.successOverlay, { opacity: overlayOpacity }]}>
+        <Animated.View style={[styles.successModalCard, { transform: [{ translateY: cardTranslateY }] }]}>
+          
+          <View style={styles.cholulaHero}>
+            <Animated.View style={[styles.sunWrapper, { transform: [{translateY: sunTranslateY}] }]}>
+               <Sun size={64} color="#A3835F" />
+            </Animated.View>
+            
+            <View style={styles.pyramidWrapper}>
+              <View style={styles.churchTop}>
+                 {/* Representación de la iglesia sobre la pirámide central */}
+                 <View style={styles.churchCrossVertical} />
+                 <View style={styles.churchCrossHorizontal} />
+                 <View style={styles.churchDome} />
+                 <View style={styles.churchBaseElem} />
+              </View>
+              <Mountain size={140} color="#611232" strokeWidth={1.5} />
+            </View>
+          </View>
+
+          <View style={styles.successIconWrapper}>
+            <CheckCircle size={32} color="#ffffff" />
+          </View>
+          <Text style={styles.successTitleText}>¡Recarga Exitosa!</Text>
+          <Text style={styles.successSubtitleText}>
+            Tu saldo está listo. ¡A pueblear!
+          </Text>
+        </Animated.View>
+      </Animated.View>
+    );
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.contentContainer}>
       
       {/* Header */}
       <View style={styles.header}>
@@ -446,6 +631,9 @@ export default function PasareladePagos() {
       </View>
       
     </ScrollView>
+    {renderTutorialOverlay()}
+    {renderSuccessOverlay()}
+    </View>
   );
 }
 
@@ -453,6 +641,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  scrollView: {
+    flex: 1,
   },
   contentContainer: {
     paddingTop: 40,
@@ -838,5 +1029,181 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#4b5563',
     marginTop: 4,
+  },
+  // --- Estilos del Tutorial ---
+  tutorialOverlayContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 2000,
+  },
+  tutorialBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(97, 18, 50, 0.4)', // Guinda transp
+  },
+  tutorialCard: {
+    width: width * 0.85,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  tutorialIconWrapper: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#fdf2f8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  tutorialDotsHolder: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 24,
+  },
+  tutorialDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#e5e7eb',
+  },
+  tutorialDotActive: {
+    width: 24,
+    backgroundColor: '#611232',
+  },
+  tutorialTitleText: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#111827',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  tutorialDescText: {
+    fontSize: 14,
+    color: '#4b5563',
+    textAlign: 'center',
+    fontWeight: '500',
+    marginBottom: 32,
+    lineHeight: 20,
+  },
+  tutorialButton: {
+    flexDirection: 'row',
+    backgroundColor: '#611232',
+    height: 50,
+    borderRadius: 25,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  tutorialButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  // --- Estilos de animación de éxito (Cholula) ---
+  successOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  successModalCard: {
+    width: width * 0.85,
+    backgroundColor: '#ffffff',
+    borderRadius: 32,
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.25,
+    shadowRadius: 30,
+    elevation: 20,
+  },
+  cholulaHero: {
+    width: '100%',
+    height: 160,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 24,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  sunWrapper: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+  },
+  pyramidWrapper: {
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: -15, // recortar la base
+  },
+  churchTop: {
+    alignItems: 'center',
+    marginBottom: -8, // solapar con la montaña
+    zIndex: 10,
+  },
+  churchCrossVertical: {
+    width: 2,
+    height: 10,
+    backgroundColor: '#A3835F',
+  },
+  churchCrossHorizontal: {
+    width: 8,
+    height: 2,
+    backgroundColor: '#A3835F',
+    position: 'absolute',
+    top: 3,
+  },
+  churchDome: {
+    width: 14,
+    height: 10,
+    backgroundColor: '#A3835F',
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    marginTop: 2,
+  },
+  churchBaseElem: {
+    width: 24,
+    height: 14,
+    backgroundColor: '#D1BFAe',
+    borderRadius: 2,
+  },
+  successIconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#16a34a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#16a34a',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  successTitleText: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#111827',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  successSubtitleText: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    fontWeight: '500',
+    paddingHorizontal: 16,
   },
 });
