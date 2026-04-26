@@ -848,6 +848,86 @@ export const NODOS_REMMI = [
     longitud: -98.2343,
     bicisDisponibles: 2,
     tipo: "Comercial"
+  },
+  {
+    id: "ANGEL-02",
+    nombre: "Nodo Plaza Cristal",
+    latitud: 19.02267199799207,
+    longitud: -98.21373519620448,
+    bicisDisponibles: 2,
+    tipo: "Comercial"
+  },
+  {
+    id: "ANGEL-03",
+    nombre: "Nodo Plaza Solesta",
+    latitud: 19.034626521818552,
+    longitud: -98.22914103047432,
+    bicisDisponibles: 4,
+    tipo: "Comercial"
+  },
+  {
+    id: "ANGEL-04",
+    nombre: "Nodo Plaza Diamante",
+    latitud: 18.97012222729572,
+    longitud: -98.18623172969906,
+    bicisDisponibles: 6,
+    tipo: "Comercial"
+  },
+  {
+    id: "ANGEL-05",
+    nombre: "Nodo Parque Puebla",
+    latitud: 19.072774699880178,
+    longitud: -98.27669693416819,
+    bicisDisponibles: 8,
+    tipo: "Comercial"
+  },
+  {
+    id: "ANGEL-06",
+    nombre: "Nodo Galerias Serdan",
+    latitud: 19.07176604065317,
+    longitud: -98.22477697705952,
+    bicisDisponibles: 8,
+    tipo: "Comercial"
+  },
+  {
+    id: "PARQ-01",
+    nombre: "Parque Ecológico",
+    latitud: 19.0335,
+    longitud: -98.1831,
+    bicisDisponibles: 8,
+    tipo: "Parque"
+  },
+  {
+    id: "PARQ-02",
+    nombre: "Parque Juárez",
+    latitud: 19.02746319239724,
+    longitud: -98.20469302927843,
+    bicisDisponibles: 5,
+    tipo: "Parque"
+  },
+  {
+    id: "PARQ-03",
+    nombre: "Parque Jardin del Arte",
+    latitud: 19.03567839362623,
+    longitud: 98.2420324341692,
+    bicisDisponibles: 5,
+    tipo: "Parque"
+  },
+  {
+    id: "PARQ-04",
+    nombre: "Los Fuertes",
+    latitud: 19.058514416534802,
+    longitud: -98.18028444095646,
+    bicisDisponibles: 5,
+    tipo: "Parque"
+  },
+  {
+    id: "PARQ-05",
+    nombre: "Museo de la Evolución",
+    latitud: 19.058514416534802,
+    longitud: -98.18028444095646,
+    bicisDisponibles: 5,
+    tipo: "Museo"
   }
 ];
 
