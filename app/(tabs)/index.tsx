@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Alert } from 'react-native';
-import MapView, { Callout, Marker, Polyline } from 'react-native-maps';
+import MapView, { Callout, Geojson, Marker, Polyline  } from 'react-native-maps';
 import { useLocalSearchParams } from 'expo-router';
 import { NODOS_REMMI } from '../../data';
-
+const cicloviasData = require('../../assets/Red_Ciclista.json');
+const cicloviasLimpias = {
+  ...cicloviasData,
+  features: cicloviasData.features.filter(
+    (feature: any) =>
+      feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString'
+  )
+};
 export default function MapScreen() {
   const params = useLocalSearchParams();
   const [destino, setDestino] = useState<any>(null);
@@ -11,7 +18,7 @@ export default function MapScreen() {
 
   const PUNTO_INICIO_ZOCALO = { latitude: 19.0433, longitude: -98.1983 };
 
-  const regionCentro = {
+  const regionInicial = {
     latitude: 19.0433,
     longitude: -98.1983,
     latitudeDelta: 0.015,
@@ -76,9 +83,14 @@ export default function MapScreen() {
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        initialRegion={regionCentro}
+        initialRegion={regionInicial}
         showsUserLocation={true}
       >
+        <Geojson
+          geojson={cicloviasLimpias}
+          strokeColor="#3182CE"
+          strokeWidth={3}
+        />
         {NODOS_REMMI.map((nodo) => (
           <Marker
             key={nodo.id}
