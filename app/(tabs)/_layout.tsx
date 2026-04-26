@@ -21,6 +21,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Mapa',
+          title: 'Mapa',
           tabBarIcon: ({ color }) => <Ionicons name="map" size={28} color={color} />,
         }}
       />
@@ -38,6 +39,15 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Ionicons name="card-outline" size={28} color={color} />
         }}
       />
+        }}
+      />
+      <Tabs.Screen
+          name="recompensas"
+          options={{
+            title: 'Premios',
+            tabBarIcon: ({ color }) => <Ionicons name="leaf" size={28} color={color} />,
+          }}
+        />
     </Tabs>
   );
 }
