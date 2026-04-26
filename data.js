@@ -242,27 +242,41 @@ export const CATALOGO_RECOMPENSAS = [
       tipo: 'Museo', 
       titulo: 'Entrada Gratis: Museo Amparo', 
       descripcion: 'Válido para una entrada general cualquier día de la semana.',
-      costoPuntos: 5 
+      costoPuntos: 14 
   },
   { 
       id: 'RWD-002', 
       tipo: 'Museo', 
       titulo: 'Entrada Gratis: Fuerte de Loreto', 
       descripcion: 'Conoce la historia de Puebla con esta entrada general.',
-      costoPuntos: 3 
+      costoPuntos: 9
   },
   { 
       id: 'RWD-003', 
       tipo: 'Museo', 
       titulo: 'Entrada Gratis: Museo de la Evolución', 
       descripcion: 'válido para tu próxima visitas.',
-      costoPuntos: 2 
+      costoPuntos: 8
   },
   { 
       id: 'RWD-004', 
       tipo: 'Museo', 
-      titulo: 'Entrada Gratis: Museo amparo', 
+      titulo: 'Entrada Gratis: Planetario', 
       descripcion: 'válido para tu próxima visitas.',
-      costoPuntos: 4  
+      costoPuntos: 10 
+  },
+{ 
+      id: 'RWD-005', 
+      tipo: 'Descuento', 
+      titulo: 'Viaje estrella de puebla', 
+      descripcion: 'Ten un viaje gratis en la estrella de puebla.',
+      costoPuntos: 40 
+  }, 
+    { 
+      id: 'RWD-006', 
+      tipo: 'Descuento', 
+      titulo: 'Viaje carrusel parque sendela', 
+      descripcion: 'Ten un viaje gratis en el carrusel parque sendela.',
+      costoPuntos: 40 
   }
 ];
