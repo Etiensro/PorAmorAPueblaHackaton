@@ -852,29 +852,34 @@ export const NODOS_REMMI = [
 ];
 
 // WALLET----------------------------------------SIMULACIÓN DE DATOS DE USUARIO PARA LA BILLETERA 
-export const USUARIO_ACTUAL = {
-  nombre: "Usuario",
-  ecoTokens: 250,
-  co2AhorradoKg: 12.5,
-  viajesRealizados: 8
-};
+
 
 // Almacenamiento local en memoria para simular la base de datos de la Billetera.
 // Modificado para soportar el inicio de sesión
-let inMemoryDB = {
+export let inMemoryDB = {
   users: {
     'user_123': {
       id: 'user_123',
-      nombre: USUARIO_ACTUAL.nombre,
+      nombre: 'Estudiante BUAP', // <-- IMPORTANTE: Cambiamos esto a texto normal para que no dé error
       email: 'estudiante@buap.mx',
-      password: 'password123', // Contraseña inicial para poder inciar sesión (email: estudiante@buap.mx)
-      balance: 150.50, // Saldo inicial predeterminado
+      password: 'password123', 
+      balance: 150.50, 
       cards: [
         { id: 'c_abc', cardNumber: '1234567890123456', expiryDate: '12/28', last4: '3456' }
-      ]
+      ],
+      // --- TUS DATOS ECOLÓGICOS VAN AQUÍ ADENTRO ---
+      ecoTokens: 0,
+      co2AhorradoKg: 30.0
     }
   }
 };
+
+// --- EL TRUCO PARA TU PANTALLA ---
+// Creamos un "atajo" para que tu pantalla siga leyendo "USUARIO_ACTUAL" 
+// pero en realidad esté modificando el usuario_123 de la base de datos de tu compañero.
+export const USUARIO_ACTUAL = inMemoryDB.users['user_123'];
+
+// (Y aquí abajo dejas tu CATALOGO_RECOMPENSAS tal cual lo tenías)
 
 // Simulamos que el usuario "user_123" es el que está usando la app actual.
 let currentUserId = 'user_123';
@@ -1060,35 +1065,61 @@ export const LUGARES_RECOMENDADOS_CENTRO = [
     icono: "business" // Icono ilustrativo
   }
 ];
-
+// El nuevo objeto exclusivo para tu pestaña de recompensas
+export const PERFIL_ECOLOGICO = {
+  nombre: "Estudiante", // Se mostrará en tu encabezado
+  ecoTokens: 0,         // Tus compañeros pueden leer esto si lo necesitan
+  co2AhorradoKg: 30.0,
+};
 export const CATALOGO_RECOMPENSAS = [
   {
     id: 'RWD-001',
     tipo: 'Museo',
     titulo: 'Entrada Gratis: Museo Amparo',
     descripcion: 'Válido para una entrada general cualquier día de la semana.',
-    costoPuntos: 5
+    costoPuntos: 9
   },
   {
     id: 'RWD-002',
     tipo: 'Museo',
     titulo: 'Entrada Gratis: Fuerte de Loreto',
     descripcion: 'Conoce la historia de Puebla con esta entrada general.',
-    costoPuntos: 3
+    costoPuntos: 10
   },
   {
     id: 'RWD-003',
-    tipo: 'Descuento',
-    titulo: '15% Off: Estación CU',
-    descripcion: 'Descuento válido para tu próxima renta iniciando en Ciudad Universitaria.',
-    costoPuntos: 2
+    tipo: 'Museo',
+    titulo: 'Entrada Gratis: Planetario',
+    descripcion: 'Válido para una entrada general cualquier día de la semana.',
+    costoPuntos: 16
   },
   {
     id: 'RWD-004',
+    tipo: 'Museo',
+    titulo: 'Entrada Gratis: Museo de la Evolución',
+    descripcion: 'Válido para una entrada general cualquier día de la semana.',
+    costoPuntos: 15
+  },  
+  {
+    id: 'RWD-005',
+    tipo: 'Museo',
+    titulo: 'Entrada Gratis: casa de los muñecos',
+    descripcion: 'Válido para una entrada general cualquier día de la semana.',
+    costoPuntos: 15
+  }, 
+    {
+    id: 'RWD-006',
     tipo: 'Descuento',
-    titulo: 'Viaje de 30 min gratis',
-    descripcion: 'Aplica en cualquier estación de la red (Paseo Bravo, Zócalo, etc).',
-    costoPuntos: 4
+    titulo: 'Entrada Gratis: Carrusel Parque sendela',
+    descripcion: 'Válido para una entrada general cualquier día de la semana.',
+    costoPuntos: 30
+  },
+    {
+    id: 'RWD-007',
+    tipo: 'Descuento',
+    titulo: 'Entrada Gratis: Estrella de puebla',
+    descripcion: 'Válido para una entrada general cualquier día de la semana.',
+    costoPuntos: 40
   }
 ];
 

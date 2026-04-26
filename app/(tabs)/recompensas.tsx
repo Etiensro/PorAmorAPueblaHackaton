@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-// Importamos el catálogo de data.js
-import { CATALOGO_RECOMPENSAS } from '../../data';
+// Importamos el catálogo y a nuestro USUARIO_ACTUAL (el que conectamos con tu compañero)
+import { CATALOGO_RECOMPENSAS, USUARIO_ACTUAL } from '../../data';
 
 export default function RecompensasScreen() {
-  // ------------------------------------------------------------------
-  // Valor simulado de CO2 (reemplazar cuando se conecte con las otras pestañas)
-  const CO2_SIMULADO = 30.0; 
-  // ------------------------------------------------------------------
-
-  const [co2Local, setCo2Local] = useState(CO2_SIMULADO);
-
-  useEffect(() => {
-    setCo2Local(CO2_SIMULADO);
-  }, [CO2_SIMULADO]);
   
+  // 1. Iniciamos el saldo leyendo directamente los datos de tu compañero
+  const [co2Local, setCo2Local] = useState(USUARIO_ACTUAL.co2AhorradoKg);
+
   const puntosDisponibles = Math.floor(co2Local / 4);
   const progresoParaSiguientePunto = (co2Local % 4).toFixed(1);
+
+  // 2. Mantenemos el "servidor" actualizado cada vez que el CO2 cambia
+  useEffect(() => {
+    USUARIO_ACTUAL.co2AhorradoKg = co2Local;
+    USUARIO_ACTUAL.ecoTokens = puntosDisponibles;
+  }, [co2Local]);
 
   // Función para generar código (solo para museos)
   const generarCodigoMuseo = () => {
@@ -62,7 +61,7 @@ export default function RecompensasScreen() {
       }
     } else {
       Alert.alert(
-        "Puntos insuficientes",
+        "Eco-tokens insuficientes",
         `Necesitas ahorrar ${(recompensa.costoPuntos * 4 - co2Local).toFixed(1)} kg más de CO2 para este premio.`
       );
     }
@@ -82,7 +81,7 @@ export default function RecompensasScreen() {
         <Text style={styles.description}>{item.descripcion}</Text>
         <View style={styles.footerCard}>
           <Text style={[styles.puntosCosto, { color: puedeCanjear ? '#2d6a4f' : '#bc4749' }]}>
-            {item.costoPuntos} Puntos
+            {item.costoPuntos} Eco-tokens
           </Text>
           <TouchableOpacity 
             style={[styles.btnCanjear, { backgroundColor: puedeCanjear ? '#611232' : '#bdc3c7' }]}
@@ -103,17 +102,18 @@ export default function RecompensasScreen() {
       
       {/* SECCIÓN ACTUALIZADA CON LA IMAGEN */}
       <ImageBackground 
-        source={require('../../assets/images/2c2579dc-ec7f-4026-a0c6-637e5d46b3af.jpg')} // Cambia a .jpg si tu archivo es JPG y verifica si está dentro de la subcarpeta images/
+        source={require('../../assets/images/2c2579dc-ec7f-4026-a0c6-637e5d46b3af.jpg')} 
         style={styles.header}
         resizeMode="cover"
         imageStyle={styles.headerImageStyle}
       >
         <View style={styles.headerOverlay}>
-          <Text style={styles.userText}>Mis Recompensas</Text>
-          <Text style={styles.puntosPrincipales}>{puntosDisponibles} Puntos</Text>
+          {/* 3. Saludo dinámico con el nombre del usuario */}
+          <Text style={styles.userText}>Hola, {USUARIO_ACTUAL.nombre}</Text>
+          <Text style={styles.puntosPrincipales}>{puntosDisponibles} Eco-tokens</Text>
           <Text style={styles.co2Sub}>Total ahorrado: {co2Local.toFixed(1)} kg de CO2</Text>
           <View style={styles.progressContainer}>
-              <Text style={styles.tip}>Progreso para el siguiente punto: {progresoParaSiguientePunto}/4 kg</Text>
+              <Text style={styles.tip}>Progreso para tu próximo Eco-token: {progresoParaSiguientePunto}/4 kg</Text>
           </View>
         </View>
       </ImageBackground>
@@ -133,26 +133,23 @@ export default function RecompensasScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8f9fa' },
-  // Contenedor principal de la imagen
   header: { 
     elevation: 8,
     borderBottomLeftRadius: 30, 
     borderBottomRightRadius: 30,
-    overflow: 'hidden', // Oculta lo que se salga de los bordes redondeados
+    overflow: 'hidden', 
   },
-  // Estilo aplicado directamente a la imagen de fondo
   headerImageStyle: {
     borderBottomLeftRadius: 30, 
     borderBottomRightRadius: 30,
   },
-  // Capa semi-transparente para oscurecer un poco la foto y que el texto resalte
   headerOverlay: {
-    backgroundColor: 'rgba(0,0,0,0.4)', // Ajusta el 0.4 si quieres que sea más clara o más oscura
+    backgroundColor: 'rgba(0,0,0,0.4)', 
     padding: 30, 
     paddingTop: 60,
   },
   userText: { color: '#d1d8e0', fontSize: 16, marginBottom: 5 },
-  puntosPrincipales: { color: '#fff', fontSize: 40, fontWeight: 'bold' },
+  puntosPrincipales: { color: '#fff', fontSize: 38, fontWeight: 'bold' },
   co2Sub: { color: '#fff', fontSize: 14, marginTop: 5, opacity: 0.9 },
   progressContainer: { marginTop: 10, borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.2)', paddingTop: 10 },
   tip: { color: '#feca57', fontSize: 12, fontWeight: 'bold' },

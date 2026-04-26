@@ -29,7 +29,7 @@ export default function ExploreScreen() {
     >
       <View style={styles.encabezadoTarjeta}>
         {/* Aquí agregamos el icono ilustrativo */}
-        <Ionicons name={item.icono} size={24} color="#la73e8" style={styles.icono} />
+        <Ionicons name={item.icono} size={24} color="#611232" style={styles.icono} />
         <Text style={styles.titulo}>{item.nombre}</Text>
       </View>
       
@@ -63,10 +63,10 @@ export default function ExploreScreen() {
 }
 
 const styles = StyleSheet.create({
-  contenedorPrincipal: { flex: 1, backgroundColor: '#F5F7FA' },
-  cabecera: { padding: 20, backgroundColor: '#ffffff', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
-  tituloPrincipal: { fontSize: 24, fontWeight: 'bold', color: '#1A202C' },
-  subtitulo: { fontSize: 14, color: '#718096', marginTop: 5 },
+  contenedorPrincipal: { flex: 1, backgroundColor: '#f8f9fa' },
+  cabecera: { padding: 20, backgroundColor: '#611232', borderBottomWidth: 1, borderBottomColor: '#611232' },
+  tituloPrincipal: { fontSize: 24, fontWeight: 'bold', color: '#ffffff' },
+  subtitulo: { fontSize: 14, color: '#d1d8e0', marginTop: 5 },
   listaPadding: { padding: 15 },
   tarjeta: {
     backgroundColor: '#ffffff', borderRadius: 12, padding: 16, marginBottom: 15,
@@ -74,10 +74,10 @@ const styles = StyleSheet.create({
   },
   encabezadoTarjeta: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   icono: { marginRight: 10 },
-  titulo: { fontSize: 18, fontWeight: 'bold', color: '#2D3748', flex: 1 },
+  titulo: { fontSize: 18, fontWeight: 'bold', color: '#611232', flex: 1 },
   descripcion: { fontSize: 14, color: '#4A5568', lineHeight: 20, marginBottom: 12 },
   filaInfo: { flexDirection: 'row', marginBottom: 10 },
-  distancia: { fontSize: 13, color: '#3182CE', fontWeight: '600' },
-  etiquetaBeneficio: { backgroundColor: '#E6FFFA', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, alignSelf: 'flex-start' },
-  textoBeneficio: { color: '#2C7A7B', fontSize: 12, fontWeight: 'bold' }
+  distancia: { fontSize: 13, color: '#611232', fontWeight: '600' },
+  etiquetaBeneficio: { backgroundColor: '#fbe9f0', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, alignSelf: 'flex-start' },
+  textoBeneficio: { color: '#611232', fontSize: 12, fontWeight: 'bold' }
 });
