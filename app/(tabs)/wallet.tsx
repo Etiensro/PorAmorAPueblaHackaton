@@ -201,7 +201,7 @@ export default function PasareladePagos() {
   if (isLoadingData) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color="#16a34a" />
+        <ActivityIndicator size="large" color="#611232" />
       </View>
     );
   }
@@ -225,7 +225,7 @@ export default function PasareladePagos() {
         <View style={styles.mainCard}>
           <View style={styles.cardHeader}>
             <Text style={styles.cardBadge}>CÓDIGO REMMI</Text>
-            <CreditCard size={24} color="#9ca3af" />
+            <CreditCard size={24} color="#A3835F" />
           </View>
 
           <View style={styles.balanceContainer}>
@@ -241,13 +241,12 @@ export default function PasareladePagos() {
           <Text style={styles.userEmail}>{userData?.email || userData?.nombre}</Text>
         </View>
 
-        {/* Pasarela de pago / Botón de recarga */}
         {showRecharge ? (
           <View style={styles.rechargeBox}>
             <View style={styles.rechargeHeader}>
               <Text style={styles.rechargeTitle}>Pasarela de pago</Text>
               <TouchableOpacity onPress={() => setShowRecharge(false)}>
-                <X size={20} color="#9ca3af" />
+                <X size={20} color="#BCBDBF" />
               </TouchableOpacity>
             </View>
             
@@ -282,7 +281,7 @@ export default function PasareladePagos() {
                 {userData.cards.map((card: any, i: number) => {
                   const isSelected = selectedCardId === card.id || (!selectedCardId && i === 0);
                   if (isSelected && !selectedCardId) {
-                     setTimeout(() => setSelectedCardId(card.id), 0);
+                      setTimeout(() => setSelectedCardId(card.id), 0);
                   }
                   return (
                     <TouchableOpacity
@@ -292,11 +291,11 @@ export default function PasareladePagos() {
                     >
                       <View style={styles.cardOptionLeft}>
                         <View style={[styles.cardOptionIcon, isSelected && styles.cardOptionIconSelected]}>
-                          <CreditCard size={16} color={isSelected ? '#16a34a' : '#9ca3af'} />
+                          <CreditCard size={16} color={isSelected ? '#611232' : '#BCBDBF'} />
                         </View>
                         <Text style={styles.cardOptionText}>•••• {card.last4}</Text>
                       </View>
-                      {isSelected && <Check size={16} color="#16a34a" />}
+                      {isSelected && <Check size={16} color="#611232" />}
                     </TouchableOpacity>
                   );
                 })}
@@ -323,7 +322,7 @@ export default function PasareladePagos() {
           </View>
         ) : (
           <TouchableOpacity style={styles.rechargeButton} onPress={() => setShowRecharge(true)}>
-            <Plus size={20} color="#15803d" />
+            <Plus size={20} color="#611232" />
             <Text style={styles.rechargeButtonText}>Recargar Saldo</Text>
           </TouchableOpacity>
         )}
@@ -343,7 +342,7 @@ export default function PasareladePagos() {
         {showAddCard ? (
           <View style={styles.addCardBox}>
             <TouchableOpacity style={styles.closeAddCard} onPress={() => setShowAddCard(false)}>
-              <X size={20} color="#9ca3af" />
+              <X size={20} color="#BCBDBF" />
             </TouchableOpacity>
             <Text style={styles.addCardTitle}>Nueva Tarjeta de Débito/Crédito</Text>
             
@@ -410,7 +409,7 @@ export default function PasareladePagos() {
                 <View key={card.id} style={styles.cardItem}>
                   <View style={styles.cardItemLeft}>
                     <View style={styles.cardItemIconWrapper}>
-                      <CreditCard size={20} color="#4b5563" />
+                      <CreditCard size={20} color="#611232" />
                     </View>
                     <View>
                       <Text style={styles.cardItemNumber}>•••• {card.last4}</Text>
@@ -418,13 +417,13 @@ export default function PasareladePagos() {
                     </View>
                   </View>
                   <TouchableOpacity onPress={() => handleDeleteCard(card.id)}>
-                    <Trash2 size={18} color="#9ca3af" />
+                    <Trash2 size={18} color="#BCBDBF" />
                   </TouchableOpacity>
                 </View>
               ))
             ) : (
               <View style={styles.emptyCards}>
-                <CreditCard size={32} color="#d1d5db" style={{marginBottom: 8}}/>
+                <CreditCard size={32} color="#BCBDBF" style={{marginBottom: 8}}/>
                 <Text style={styles.emptyCardsText}>No hay tarjetas guardadas.</Text>
               </View>
             )}
@@ -437,7 +436,7 @@ export default function PasareladePagos() {
         <Text style={styles.sectionTitle}>Seguridad</Text>
         <View style={styles.securityBox}>
           <View style={styles.securityIconWrapper}>
-            <ShieldCheck size={24} color="#16a34a" />
+            <ShieldCheck size={24} color="#A3835F" />
           </View>
           <View>
             <Text style={styles.securityTitle}>Transacciones Seguras</Text>
@@ -449,9 +448,6 @@ export default function PasareladePagos() {
     </ScrollView>
   );
 }
-
-// MANTEN EXACTAMENTE TUS MISMOS STYLES (StyleSheet.create({ ... })) AQUÍ ABAJO
-// (...)
 
 const styles = StyleSheet.create({
   container: {
@@ -472,12 +468,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#111827',
+    color: '#611232', // Guinda
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#4b5563',
     fontWeight: '500',
   },
   logoutButton: {
@@ -490,7 +486,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   mainCard: {
-    backgroundColor: '#111827',
+    backgroundColor: '#611232', // Guinda
     borderRadius: 32,
     padding: 24,
     marginBottom: 24,
@@ -510,13 +506,13 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: 'bold',
     letterSpacing: 1.5,
-    color: '#9ca3af',
+    color: '#ffffff',
   },
   balanceContainer: {
     marginBottom: 24,
   },
   balanceLabel: {
-    color: '#9ca3af',
+    color: '#BCBDBF', // Gris
     fontSize: 12,
     fontWeight: '500',
     marginBottom: 4,
@@ -528,23 +524,23 @@ const styles = StyleSheet.create({
   balanceAmount: {
     fontSize: 36,
     fontWeight: '900',
-    color: '#ffffff',
+    color: '#A3835F', // Oro
   },
   balanceCurrency: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#9ca3af',
+    color: '#ffffff',
     marginLeft: 4,
   },
   userEmail: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#d1d5db',
+    color: '#ffffff',
   },
   rechargeButton: {
     width: '100%',
-    backgroundColor: '#ecfdf5',
-    borderColor: '#d1fae5',
+    backgroundColor: '#fdf2f8',
+    borderColor: '#611232',
     borderWidth: 1,
     borderRadius: 32,
     paddingVertical: 16,
@@ -553,7 +549,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rechargeButtonText: {
-    color: '#15803d',
+    color: '#611232',
     fontWeight: 'bold',
     fontSize: 16,
     marginLeft: 8,
@@ -580,7 +576,7 @@ const styles = StyleSheet.create({
   rechargeTitle: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#111827',
+    color: '#611232',
   },
   inputLabel: {
     fontSize: 12,
@@ -603,8 +599,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   amountButtonSelected: {
-    backgroundColor: '#16a34a',
-    borderColor: '#16a34a',
+    backgroundColor: '#611232',
+    borderColor: '#611232',
   },
   amountButtonText: {
     fontWeight: 'bold',
@@ -641,8 +637,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   cardOptionSelected: {
-    borderColor: '#22c55e',
-    backgroundColor: '#f0fdf4',
+    borderColor: '#611232',
+    backgroundColor: '#fdf2f8',
   },
   cardOptionLeft: {
     flexDirection: 'row',
@@ -658,7 +654,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   cardOptionIconSelected: {
-    backgroundColor: '#dcfce7',
+    backgroundColor: '#fce7f3',
   },
   cardOptionText: {
     fontSize: 14,
@@ -668,18 +664,18 @@ const styles = StyleSheet.create({
   noCardsNotice: {
     marginBottom: 20,
     padding: 12,
-    backgroundColor: '#eff6ff',
-    borderColor: '#dbeafe',
+    backgroundColor: '#f3f4f6',
+    borderColor: '#e5e7eb',
     borderWidth: 1,
     borderRadius: 12,
   },
   noCardsNoticeText: {
-    color: '#1d4ed8',
+    color: '#4b5563',
     fontSize: 12,
     fontWeight: '500',
   },
   confirmButton: {
-    backgroundColor: '#111827',
+    backgroundColor: '#611232',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -701,12 +697,12 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#611232',
   },
   addButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#16a34a',
+    color: '#A3835F', // Oro
   },
   addCardBox: {
     backgroundColor: '#f9fafb',
@@ -715,17 +711,19 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 20,
     position: 'relative',
+    paddingTop: 40,
   },
   closeAddCard: {
     position: 'absolute',
-    top: 16,
-    right: 16,
+    top: 15,
+    right: 15,
     zIndex: 10,
+    padding: 5,
   },
   addCardTitle: {
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#111827',
+    color: '#611232',
     marginBottom: 16,
   },
   row: {
@@ -736,7 +734,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveCardButton: {
-    backgroundColor: '#111827',
+    backgroundColor: '#611232',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -802,7 +800,7 @@ const styles = StyleSheet.create({
   emptyCardsText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
+    color: '#BCBDBF',
   },
   securitySection: {
     paddingHorizontal: 24,
@@ -834,11 +832,11 @@ const styles = StyleSheet.create({
   },
   securityTitle: {
     fontWeight: 'bold',
-    color: '#111827',
+    color: '#611232',
   },
   securitySubtitle: {
     fontSize: 12,
-    color: '#6b7280',
+    color: '#4b5563',
     marginTop: 4,
   },
 });
