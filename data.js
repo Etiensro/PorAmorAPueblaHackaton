@@ -1188,21 +1188,21 @@ export const CATALOGO_RECOMPENSAS = [
     tipo: 'Museo',
     titulo: 'Entrada Gratis: Museo Amparo',
     descripcion: 'Válido para una entrada general cualquier día de la semana.',
-    costoPuntos: 9
+    costoPuntos: 2
   },
   {
     id: 'RWD-002',
     tipo: 'Museo',
     titulo: 'Entrada Gratis: Fuerte de Loreto',
     descripcion: 'Conoce la historia de Puebla con esta entrada general.',
-    costoPuntos: 10
+    costoPuntos: 5
   },
   {
     id: 'RWD-003',
     tipo: 'Museo',
     titulo: 'Entrada Gratis: Planetario',
     descripcion: 'Válido para una entrada general cualquier día de la semana.',
-    costoPuntos: 16
+    costoPuntos: 1
   },
   {
     id: 'RWD-004',
@@ -1216,7 +1216,7 @@ export const CATALOGO_RECOMPENSAS = [
     tipo: 'Museo',
     titulo: 'Entrada Gratis: casa de los muñecos',
     descripcion: 'Válido para una entrada general cualquier día de la semana.',
-    costoPuntos: 15
+    costoPuntos: 2
   },
   {
     id: 'RWD-006',

@@ -1,32 +1,22 @@
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Award, Bike, ChevronRight, Cloud, CloudLightning, CloudRain, Compass, Leaf, MapPin, Navigation, Search, Sun, User } from 'lucide-react-native';
+import { Award, Bike, Cloud, CloudLightning, CloudRain, Compass, Leaf, Navigation, Search, Sun, User } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Image, ImageBackground, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
-// Importamos la "base de datos" compartida (USUARIO_ACTUAL)
-import { USUARIO_ACTUAL } from '../../data';
+// IMPORTAMOS LAS FUNCIONES DINÁMICAS EN LUGAR DE LA VARIABLE ESTÁTICA
+import { getCurrentUserId, getUserData, PERFIL_ECOLOGICO } from '../../data';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 const AnimatedActionCard = ({ icon: Icon, title, onPress, color }: { icon: any, title: string, onPress: () => void, color: string }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
-    Animated.spring(scale, {
-      toValue: 0.9,
-      friction: 5,
-      tension: 100,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scale, { toValue: 0.9, friction: 5, tension: 100, useNativeDriver: true }).start();
   };
 
   const handlePressOut = () => {
-    Animated.spring(scale, {
-      toValue: 1,
-      friction: 4,
-      tension: 60,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scale, { toValue: 1, friction: 4, tension: 60, useNativeDriver: true }).start();
   };
 
   return (
@@ -51,54 +41,15 @@ const AnimatedActionCard = ({ icon: Icon, title, onPress, color }: { icon: any, 
   );
 };
 
-// COMPONENTE MODIFICADO: Se eliminó imageUrl
-const AnimatedTripCard = ({ route, date, points }: { route: string, date: string, points: string }) => {
-  const scale = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    Animated.spring(scale, { toValue: 0.96, useNativeDriver: true }).start();
-  };
-
-  const handlePressOut = () => {
-    Animated.spring(scale, { toValue: 1, friction: 4, tension: 40, useNativeDriver: true }).start();
-  };
-
-  return (
-    <TouchableWithoutFeedback
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      onPress={() => {
-        handlePressIn();
-        setTimeout(() => { handlePressOut(); }, 150);
-      }}
-    >
-      <Animated.View style={[styles.recentTripCard, { transform: [{ scale }] }]}>
-         {/* SE ELIMINÓ EL COMPONENTE IMAGE */}
-         <View style={styles.tripContent}>
-           <View style={styles.tripLeft}>
-               <View style={styles.tripIconWrapper}>
-                 <MapPin size={20} color="#A3835F" />
-              </View>
-              <View>
-                 <Text style={styles.tripRoute}>{route}</Text>
-                 <Text style={styles.tripDate}>{date}</Text>
-              </View>
-           </View>
-           <View style={styles.tripRight}>
-              <Text style={styles.tripPoints}>{points}</Text>
-              <ChevronRight size={16} color="#BCBDBF" />
-           </View>
-         </View>
-      </Animated.View>
-    </TouchableWithoutFeedback>
-  );
-};
-
 export default function Inicio() {
   const router = useRouter();
   
-  // --- ESTADO VINCULADO AL USUARIO ---
-  const [userData, setUserData] = useState(USUARIO_ACTUAL);
+  // --- ESTADOS DE DATOS (Inician vacíos para cargarse dinámicamente) ---
+  const [userData, setUserData] = useState<any>(null);
+  const [stats, setStats] = useState({
+    co2: PERFIL_ECOLOGICO.co2AhorradoKg,
+    tokens: Math.floor(PERFIL_ECOLOGICO.co2AhorradoKg / 4)
+  });
 
   // --- ESTADO PARA EL CLIMA ---
   const [weatherData, setWeatherData] = useState({
@@ -129,16 +80,36 @@ export default function Inicio() {
   const [transitionData, setTransitionData] = useState<{color: string, icon: any, title: string} | null>(null);
   const transitionAnim = useRef(new Animated.Value(0)).current;
 
-  // FUNCIÓN CLAVE: Refresca el estado local con los datos globales
-  const refreshLocalData = useCallback(() => {
-    setUserData({ ...USUARIO_ACTUAL });
+  // FUNCIÓN PARA CARGAR EL USUARIO REAL QUE INICIÓ SESIÓN
+  const loadActiveUser = useCallback(async () => {
+    try {
+      // 1. Obtenemos el ID del usuario que se acaba de loguear o registrar
+      const activeId = getCurrentUserId();
+      
+      if (activeId) {
+        // 2. Buscamos sus datos reales en la base de datos
+        const realUserData = await getUserData(activeId);
+        if (realUserData) {
+          setUserData(realUserData); // ¡Aquí se guarda el nombre real!
+        }
+      }
+
+      // 3. Mantenemos la lógica de tus puntos ecológicos
+      const co2Actual = PERFIL_ECOLOGICO.co2AhorradoKg || 0;
+      setStats({
+        co2: co2Actual,
+        tokens: Math.floor(co2Actual / 4)
+      });
+    } catch (error) {
+      console.error("Error al cargar usuario activo:", error);
+    }
   }, []);
 
-  // SENSOR DE FOCO: Se activa cada vez que regresas a esta pantalla
+  // Se ejecuta cada vez que la pantalla entra en foco
   useFocusEffect(
     useCallback(() => {
-      refreshLocalData();
-    }, [refreshLocalData])
+      loadActiveUser();
+    }, [loadActiveUser])
   );
 
   const fetchWeather = async () => {
@@ -273,7 +244,8 @@ export default function Inicio() {
             <View style={styles.headerOverlay} />
             <View style={styles.headerContent}>
               <View style={styles.headerTextContainer}>
-                <Text style={styles.greetingHeader}>Hola, {userData?.nombre || 'Viajero'} 👋</Text>
+                {/* AQUÍ SE MUESTRA EL NOMBRE DINÁMICO */}
+                <Text style={styles.greetingHeader}>Hola, {userData?.nombre || 'Cargando...'} 👋</Text>
                 <Text style={styles.subGreetingHeader}>¿Listo para rodar por Puebla?</Text>
               </View>
               <View style={styles.avatarPlaceholder}>
@@ -305,7 +277,7 @@ export default function Inicio() {
             </View>
           </Animated.View>
 
-          {/* Estadísticas */}
+          {/* Estadísticas Sincronizadas */}
           <Animated.View style={[styles.section, { opacity: statsAnim, transform: [{ translateY: statsTranslate }] }]}>
             <View style={styles.heroCard}>
               <View style={styles.heroContentRow}>
@@ -313,7 +285,7 @@ export default function Inicio() {
                     <View style={styles.statIconBadge}>
                         <Leaf size={24} color="#611232" />
                     </View>
-                    <Text style={styles.heroStatValue}>{userData?.co2AhorradoKg?.toFixed(1) || '0.0'} kg</Text>
+                    <Text style={styles.heroStatValue}>{stats.co2.toFixed(1)} kg</Text>
                     <Text style={styles.heroStatLabel}>CO2 Ahorrado</Text>
                   </View>
                   <View style={styles.divider} />
@@ -321,7 +293,7 @@ export default function Inicio() {
                     <View style={[styles.statIconBadge, { backgroundColor: '#fdf2f8' }]}>
                         <Award size={24} color="#611232" />
                     </View>
-                    <Text style={styles.heroStatValue}>{Math.floor((userData?.co2AhorradoKg || 0) / 4)}</Text>
+                    <Text style={styles.heroStatValue}>{stats.tokens}</Text>
                     <Text style={styles.heroStatLabel}>Eco-Tokens</Text>
                   </View>
               </View>
@@ -338,15 +310,19 @@ export default function Inicio() {
             </View>
           </Animated.View>
 
-          {/* Viajes Recientes - ACTUALIZADO SIN IMÁGENES */}
+          {/* Viajes Recientes - ESTADO VACÍO */}
           <Animated.View style={[styles.section, { opacity: tripsAnim, transform: [{ translateY: tripsTranslate }] }]}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Viajes Recientes</Text>
-              <Text style={styles.seeAllText}>Ver Historial</Text>
             </View>
-            <AnimatedTripCard route="Zócalo - Cholula" date="Hoy, 10:30 AM" points="+12 Eco" />
-            <AnimatedTripCard route="CAPU - Barrio del Artista" date="Ayer, 16:45 PM" points="+8 Eco" />
+            
+            <View style={styles.emptyStateCard}>
+              <Bike size={32} color="#BCBDBF" style={{ marginBottom: 12 }} />
+              <Text style={styles.emptyStateTitle}>Aún no tienes viajes</Text>
+              <Text style={styles.emptyStateDesc}>¡Inicia tu primera ruta por Puebla para ganar Eco-Tokens!</Text>
+            </View>
           </Animated.View>
+
         </View>
       </ScrollView>
       {renderIntroOverlay()}
@@ -392,19 +368,11 @@ const styles = StyleSheet.create({
   heroStatLabel: { fontSize: 13, fontWeight: 'bold', color: '#A3835F', marginTop: 4 },
   sectionHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: '#611232' },
-  seeAllText: { fontSize: 14, fontWeight: 'bold', color: '#A3835F' },
   actionGrid: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 16 },
   actionCard: { backgroundColor: '#FFFFFF', borderRadius: 24, padding: 16, paddingVertical: 20, alignItems: 'center', borderWidth: 1.5, elevation: 2 },
   actionIconWrapper: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginBottom: 16, borderWidth: 1.5, elevation: 3 },
   actionTitle: { fontSize: 13, fontWeight: 'bold', textAlign: 'center' },
-  
-  // ESTILOS MODIFICADOS PARA QUITAR LA IMAGEN
-  recentTripCard: { backgroundColor: '#FFFFFF', borderRadius: 24, marginBottom: 16, borderWidth: 1, borderColor: '#e5e7eb', elevation: 2 },
-  tripContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
-  tripLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  tripIconWrapper: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center', marginRight: 16 },
-  tripRoute: { fontSize: 15, fontWeight: 'bold', color: '#611232', marginBottom: 4 },
-  tripDate: { fontSize: 12, color: '#BCBDBF', fontWeight: '600' },
-  tripRight: { flexDirection: 'row', alignItems: 'center' },
-  tripPoints: { fontSize: 16, fontWeight: '900', color: '#A3835F', marginRight: 8 },
+  emptyStateCard: { backgroundColor: '#F9FAFB', borderRadius: 24, padding: 32, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#E5E7EB', borderStyle: 'dashed', marginTop: 8 },
+  emptyStateTitle: { fontSize: 16, fontWeight: 'bold', color: '#611232', marginBottom: 8 },
+  emptyStateDesc: { fontSize: 14, color: '#BCBDBF', textAlign: 'center', lineHeight: 20 },
 });
