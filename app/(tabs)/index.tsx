@@ -49,7 +49,7 @@ const EstacionMarker = memo(({ nodo, onSelect, modoActivo }: { nodo: any, onSele
         {modoActivo ? (
           <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>H</Text>
         ) : (
-          <Ionicons name="bicycle" size={20} color="white" />
+          <Ionicons name="bicycle" size={14} color="white" />
         )}
       </View>
     </Marker>
@@ -262,13 +262,6 @@ export default function MapScreen() {
                 <Ionicons name="location-outline" size={16} color="#666" />
                 <Text style={styles.locationText}>{nodoSeleccionado.nombre}</Text>
               </View>
-              <View style={styles.batteryContainer}>
-                <View style={styles.batteryLeft}>
-                  <Ionicons name="battery-charging" size={22} color="#2ecc71" />
-                  <Text style={styles.batteryTitle}>Batería: 85%</Text>
-                </View>
-                <View style={styles.autonomyBadge}><Text style={styles.autonomyText}>~ 34 km autonomía</Text></View>
-              </View>
               <TouchableOpacity style={styles.termsContainer} activeOpacity={0.8} onPress={() => setAceptoTerminos(!aceptoTerminos)}>
                 <Ionicons name={aceptoTerminos ? "checkbox" : "square-outline"} size={24} color={aceptoTerminos ? "#81D4AD" : "#A0AAB5"} />
                 <View style={styles.termsTextContainer}>
@@ -280,7 +273,6 @@ export default function MapScreen() {
                 <Ionicons name="scan-outline" size={22} color="white" />
                 <Text style={styles.qrBtnText}>Pagar y Desbloquear</Text>
               </TouchableOpacity>
-              <Text style={styles.footerInfoText}>ABRE CON CÓDIGO QR EN CASO DE EMERGENCIA</Text>
             </Animated.View>
           </View>
         </Modal>
