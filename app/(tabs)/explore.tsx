@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, SafeAreaView, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router'; // <-- Esto nos permite saltar entre pantallas
 import { Ionicons } from '@expo/vector-icons'; // <-- Iconos ilustrativos
+import { useRouter } from 'expo-router'; // <-- Esto nos permite saltar entre pantallas
+import React from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LUGARES_RECOMENDADOS_CENTRO } from '../../data';
 
 export default function ExploreScreen() {

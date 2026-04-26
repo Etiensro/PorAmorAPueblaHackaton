@@ -1,14 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
+import Login from './Login';
+
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Muestra la pantalla de Login si no está autenticado
+  if (!isAuthenticated) {
+    return <Login onLoginSuccess={(user) => setIsAuthenticated(true)} />;
+  }
 
   return (
     <Tabs
@@ -38,14 +46,21 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <Ionicons name="card-outline" size={28} color={color} />
         }}
       />
-        
       <Tabs.Screen
           name="recompensas"
           options={{
             title: 'Premios',
             tabBarIcon: ({ color }) => <Ionicons name="leaf" size={28} color={color} />,
           }}
-        />
+      />
+      
+      {/* Ocultamos explicitly el archivo Login.tsx de la barra de tabs */}
+      <Tabs.Screen
+        name="Login"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
