@@ -51,7 +51,8 @@ const AnimatedActionCard = ({ icon: Icon, title, onPress, color }: { icon: any, 
   );
 };
 
-const AnimatedTripCard = ({ route, date, points, imageUrl }: { route: string, date: string, points: string, imageUrl: string }) => {
+// COMPONENTE MODIFICADO: Se eliminó imageUrl
+const AnimatedTripCard = ({ route, date, points }: { route: string, date: string, points: string }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
@@ -72,7 +73,7 @@ const AnimatedTripCard = ({ route, date, points, imageUrl }: { route: string, da
       }}
     >
       <Animated.View style={[styles.recentTripCard, { transform: [{ scale }] }]}>
-         <Image source={{ uri: imageUrl }} style={styles.tripImage} />
+         {/* SE ELIMINÓ EL COMPONENTE IMAGE */}
          <View style={styles.tripContent}>
            <View style={styles.tripLeft}>
                <View style={styles.tripIconWrapper}>
@@ -128,12 +129,12 @@ export default function Inicio() {
   const [transitionData, setTransitionData] = useState<{color: string, icon: any, title: string} | null>(null);
   const transitionAnim = useRef(new Animated.Value(0)).current;
 
-  // FUNCIÓN CLAVE: Refresca el estado local con los datos globales de Manuel
+  // FUNCIÓN CLAVE: Refresca el estado local con los datos globales
   const refreshLocalData = useCallback(() => {
     setUserData({ ...USUARIO_ACTUAL });
   }, []);
 
-  // SENSOR DE FOCO: Se activa cada vez que regresas a esta pantalla (ej. tras canjear un premio)
+  // SENSOR DE FOCO: Se activa cada vez que regresas a esta pantalla
   useFocusEffect(
     useCallback(() => {
       refreshLocalData();
@@ -304,7 +305,7 @@ export default function Inicio() {
             </View>
           </Animated.View>
 
-          {/* Estadísticas con Sincronización Matemática */}
+          {/* Estadísticas */}
           <Animated.View style={[styles.section, { opacity: statsAnim, transform: [{ translateY: statsTranslate }] }]}>
             <View style={styles.heroCard}>
               <View style={styles.heroContentRow}>
@@ -320,7 +321,6 @@ export default function Inicio() {
                     <View style={[styles.statIconBadge, { backgroundColor: '#fdf2f8' }]}>
                         <Award size={24} color="#611232" />
                     </View>
-                    {/* USAMOS LA MISMA FÓRMULA QUE EN PREMIOS (1 Punto = 4kg) */}
                     <Text style={styles.heroStatValue}>{Math.floor((userData?.co2AhorradoKg || 0) / 4)}</Text>
                     <Text style={styles.heroStatLabel}>Eco-Tokens</Text>
                   </View>
@@ -338,14 +338,14 @@ export default function Inicio() {
             </View>
           </Animated.View>
 
-          {/* Viajes Recientes */}
+          {/* Viajes Recientes - ACTUALIZADO SIN IMÁGENES */}
           <Animated.View style={[styles.section, { opacity: tripsAnim, transform: [{ translateY: tripsTranslate }] }]}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Viajes Recientes</Text>
               <Text style={styles.seeAllText}>Ver Historial</Text>
             </View>
-            <AnimatedTripCard route="Zócalo - Cholula" date="Hoy, 10:30 AM" points="+12 pts" imageUrl="https://images.unsplash.com/photo-1662496738982-f5dbac28e370?q=80&w=600" />
-            <AnimatedTripCard route="CAPU - Barrio del Artista" date="Ayer, 16:45 PM" points="+8 pts" imageUrl="https://images.unsplash.com/photo-1596394993175-9e6b4e6dbcc8?q=80&w=600" />
+            <AnimatedTripCard route="Zócalo - Cholula" date="Hoy, 10:30 AM" points="+12 Eco" />
+            <AnimatedTripCard route="CAPU - Barrio del Artista" date="Ayer, 16:45 PM" points="+8 Eco" />
           </Animated.View>
         </View>
       </ScrollView>
@@ -397,8 +397,9 @@ const styles = StyleSheet.create({
   actionCard: { backgroundColor: '#FFFFFF', borderRadius: 24, padding: 16, paddingVertical: 20, alignItems: 'center', borderWidth: 1.5, elevation: 2 },
   actionIconWrapper: { width: 52, height: 52, borderRadius: 26, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginBottom: 16, borderWidth: 1.5, elevation: 3 },
   actionTitle: { fontSize: 13, fontWeight: 'bold', textAlign: 'center' },
-  recentTripCard: { backgroundColor: '#FFFFFF', borderRadius: 24, marginBottom: 16, borderWidth: 1, borderColor: '#e5e7eb', elevation: 2, overflow: 'hidden' },
-  tripImage: { width: '100%', height: 120, backgroundColor: '#F3F4F6' },
+  
+  // ESTILOS MODIFICADOS PARA QUITAR LA IMAGEN
+  recentTripCard: { backgroundColor: '#FFFFFF', borderRadius: 24, marginBottom: 16, borderWidth: 1, borderColor: '#e5e7eb', elevation: 2 },
   tripContent: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16 },
   tripLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   tripIconWrapper: { width: 46, height: 46, borderRadius: 23, backgroundColor: '#fdf2f8', alignItems: 'center', justifyContent: 'center', marginRight: 16 },

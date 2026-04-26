@@ -1949,3 +1949,34 @@ export const ESTACIONES_RUTA = [
     bicisDisponibles: 22
   }
 ];
+
+/**
+ * Procesa el pago de un viaje, descontando del saldo y sumando tokens.
+ */
+export const procesarPagoViaje = async (userId, costo, tokens, distancia, co2) => {
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  if (inMemoryDB.users[userId]) {
+    const user = inMemoryDB.users[userId];
+    
+    // Inicializamos si los valores no existen (compatibilidad)
+    if (user.ecoTokens === undefined) user.ecoTokens = USUARIO_ACTUAL.ecoTokens;
+    if (user.viajesRealizados === undefined) user.viajesRealizados = USUARIO_ACTUAL.viajesRealizados;
+    if (user.co2AhorradoKg === undefined) user.co2AhorradoKg = USUARIO_ACTUAL.co2AhorradoKg;
+    
+    // Realizamos el descuento y se suman los tokens
+    user.balance -= costo;
+    user.ecoTokens += tokens;
+    user.co2AhorradoKg += parseFloat(co2);
+    user.viajesRealizados += 1;
+    
+    // Sincronizamos con el usuario global
+    USUARIO_ACTUAL.ecoTokens = user.ecoTokens;
+    USUARIO_ACTUAL.co2AhorradoKg = user.co2AhorradoKg;
+    USUARIO_ACTUAL.viajesRealizados = user.viajesRealizados;
+    
+    return { success: true, user: user };
+  } else {
+    throw new Error("Usuario no encontrado");
+  }
+};
