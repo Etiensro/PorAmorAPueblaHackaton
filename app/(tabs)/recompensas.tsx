@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, FlatList, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Importamos el catálogo de data.js
 import { CATALOGO_RECOMPENSAS } from '../../data';
@@ -85,7 +85,7 @@ export default function RecompensasScreen() {
             {item.costoPuntos} Puntos
           </Text>
           <TouchableOpacity 
-            style={[styles.btnCanjear, { backgroundColor: puedeCanjear ? '#1a73e8' : '#bdc3c7' }]}
+            style={[styles.btnCanjear, { backgroundColor: puedeCanjear ? '#611232' : '#bdc3c7' }]}
             onPress={() => handleCanjear(item)}
             disabled={!puedeCanjear}
           >
@@ -100,14 +100,23 @@ export default function RecompensasScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.userText}>Mis Logros Ecológicos</Text>
-        <Text style={styles.puntosPrincipales}>{puntosDisponibles} Puntos</Text>
-        <Text style={styles.co2Sub}>Total ahorrado: {co2Local.toFixed(1)} kg de CO2</Text>
-        <View style={styles.progressContainer}>
-            <Text style={styles.tip}>Progreso para el siguiente punto: {progresoParaSiguientePunto}/4 kg</Text>
+      
+      {/* SECCIÓN ACTUALIZADA CON LA IMAGEN */}
+      <ImageBackground 
+        source={require('../../assets/images/2c2579dc-ec7f-4026-a0c6-637e5d46b3af.jpg')} // Cambia a .jpg si tu archivo es JPG y verifica si está dentro de la subcarpeta images/
+        style={styles.header}
+        resizeMode="cover"
+        imageStyle={styles.headerImageStyle}
+      >
+        <View style={styles.headerOverlay}>
+          <Text style={styles.userText}>Mis Recompensas</Text>
+          <Text style={styles.puntosPrincipales}>{puntosDisponibles} Puntos</Text>
+          <Text style={styles.co2Sub}>Total ahorrado: {co2Local.toFixed(1)} kg de CO2</Text>
+          <View style={styles.progressContainer}>
+              <Text style={styles.tip}>Progreso para el siguiente punto: {progresoParaSiguientePunto}/4 kg</Text>
+          </View>
         </View>
-      </View>
+      </ImageBackground>
 
       <Text style={styles.tituloSeccion}>Catálogo de Premios</Text>
 
@@ -124,13 +133,23 @@ export default function RecompensasScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f8f9fa' },
+  // Contenedor principal de la imagen
   header: { 
-    backgroundColor: '#1a73e8', 
-    padding: 30, 
-    paddingTop: 60, 
+    elevation: 8,
     borderBottomLeftRadius: 30, 
     borderBottomRightRadius: 30,
-    elevation: 8
+    overflow: 'hidden', // Oculta lo que se salga de los bordes redondeados
+  },
+  // Estilo aplicado directamente a la imagen de fondo
+  headerImageStyle: {
+    borderBottomLeftRadius: 30, 
+    borderBottomRightRadius: 30,
+  },
+  // Capa semi-transparente para oscurecer un poco la foto y que el texto resalte
+  headerOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.4)', // Ajusta el 0.4 si quieres que sea más clara o más oscura
+    padding: 30, 
+    paddingTop: 60,
   },
   userText: { color: '#d1d8e0', fontSize: 16, marginBottom: 5 },
   puntosPrincipales: { color: '#fff', fontSize: 40, fontWeight: 'bold' },
@@ -151,7 +170,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
-  cardTitle: { fontSize: 16, fontWeight: 'bold', flex: 1, color: '#34495e', marginRight: 10 },
+  cardTitle: { fontSize: 16, fontWeight: 'bold', flex: 1, color: '#611232', marginRight: 10 },
   tagContainer: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, alignSelf: 'flex-start' },
   tagText: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
   description: { color: '#7f8c8d', fontSize: 13, marginBottom: 20, lineHeight: 18 },
