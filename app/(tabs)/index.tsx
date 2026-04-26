@@ -135,6 +135,20 @@ export default function MapScreen() {
     }, 300);
   }, []);
 
+  // --- MANEJO DE RUTEO DESDE EXPLORAR ---
+  useEffect(() => {
+    if (params.destLat && params.destLng) {
+      setTimeout(() => {
+        handleSeleccionarNodo({
+          latitud: parseFloat(params.destLat as string),
+          longitud: parseFloat(params.destLng as string),
+          nombre: params.nombreDestino as string || "Destino Recomendado",
+          tipo: 'Bicicleta Clásica'
+        });
+      }, 800); // Dar tiempo a que el mapa cargue
+    }
+  }, [params.destLat, params.destLng, params.nombreDestino]);
+
   // --- LÓGICA DE SIMULACIÓN DE VIAJE Y RECORRIDO DE RUTA ---
   useEffect(() => {
     let timer: any;
@@ -219,10 +233,18 @@ export default function MapScreen() {
     }
   };
 
-  const handleSeleccionarNodo = (data: any) => {
+  const handleSeleccionarNodo = async (data: any) => {
     panY.setValue(0);
     setAceptoTerminos(false);
     setNodoSeleccionado(data);
+    
+    // Obtener saldo más reciente al seleccionar nodo
+    const id = getCurrentUserId();
+    if (id) {
+      const uData = await getUserData(id);
+      if (uData) setSaldoUsuario(uData.balance);
+    }
+    
     calcularRutaAPI(data.latitud, data.longitud, data.nombre);
   };
 
@@ -230,10 +252,17 @@ export default function MapScreen() {
   const abrirCamara = async () => {
     if (!aceptoTerminos) return;
     
-    // Verificar saldo
-    if (saldoUsuario < 15) {
-      Alert.alert("Saldo Insuficiente", "No tienes fondos suficientes ($15.00 MXN) para iniciar un viaje. Por favor, recarga tu billetera.");
-      return;
+    // Verificar saldo en tiempo real
+    const id = getCurrentUserId();
+    if (id) {
+      const data = await getUserData(id);
+      if (data) {
+        setSaldoUsuario(data.balance);
+        if (data.balance < 15) {
+          Alert.alert("Saldo Insuficiente", "No tienes fondos suficientes ($15.00 MXN) para iniciar un viaje. Por favor, recarga tu billetera.");
+          return;
+        }
+      }
     }
 
     if (!permisoCamara?.granted) {
@@ -276,6 +305,9 @@ export default function MapScreen() {
       setProcesandoPago(true);
       try {
         await procesarPagoViaje(id, parseFloat(costoTotal), puntosGanados, distanciaViaje, parseFloat(co2Evitado));
+        // Recargar datos tras procesar pago
+        const data = await getUserData(id);
+        if (data) setSaldoUsuario(data.balance);
       } catch (e) {
         console.error("Error al descontar:", e);
       }
