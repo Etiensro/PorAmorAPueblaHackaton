@@ -2,12 +2,12 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { AlertCircle, Camera as CameraIcon, CheckCircle, CreditCard, User } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Animated,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 interface INEVerificationProps {

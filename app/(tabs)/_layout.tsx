@@ -25,11 +25,19 @@ export default function TabLayout() {
 
   return (
     <Tabs
+      initialRouteName="Inicio"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
+      <Tabs.Screen
+        name="Inicio"
+        options={{
+          title: 'Inicio',
+          tabBarIcon: ({ color }) => <Ionicons name="home" size={28} color={color} />,
+        }}
+      />
       <Tabs.Screen
         name="index"
         options={{
